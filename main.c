@@ -1,13 +1,4 @@
 #include <stdio.h>
-#include "colorcode.h"
-#include "test.h"
 
-int main() {
-    // Run all tests
-    runAllTests();
-    
-    // Print the reference manual
-    PrintColorCodeReferenceManual();
-    
-    return 0;
-}
+// This file is intentionally left empty to avoid duplicate main function
+// The main function is now in main_test.c

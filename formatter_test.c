@@ -4,16 +4,16 @@
 #include "colorcodeFormatter.h"
 
 void run_formatter_tests() {
-    printf("Testing color code formatters...\n");
+    printf("Testing reference manual formatters...\n");
     
     // Test markdown format
-    printReferenceManual(0); // Markdown format
+    printReferenceManual(&MarkdownFormatter);
     
     // Test CSV format
-    printReferenceManual(1); // CSV format
+    printReferenceManual(&CsvFormatter);
     
     // Test JSON format
-    printReferenceManual(2); // JSON format
+    printReferenceManual(&JsonFormatter);
     
     printf("All formatter tests passed!\n");
 }
