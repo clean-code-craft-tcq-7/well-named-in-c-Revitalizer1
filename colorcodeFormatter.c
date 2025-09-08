@@ -1,48 +1,60 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "colorcode.h"
 #include "colorcodeFormatter.h"
-enum {MARKDOWN, CSV, JSON};
-Formatter MarkdownFormatter = { md_header, md_line_format };
-Formatter CsvFormatter      = { csv_header, csv_line_format };
-Formatter JsonFormatter = { json_header, json_line_format };
-void md_header(char* buffer, int size) {
-    snprintf(buffer, size, "| Pair Number | Major Color | Minor Color |\n|---|---|---|\n");
-}
-void md_line_format(char* buffer, int size, int pairNumber, enum MajorColor major, enum MinorColor minor) {
-    snprintf(buffer, size, "| %d | %s | %s |\n", pairNumber,
-             MajorColorNames[major], MinorColorNames[minor]);
-}
-void csv_header(char* buffer, int size) {
-    snprintf(buffer, size, "Pair Number,Major Color,Minor Color\n");
-}
-void csv_line_format(char* buffer, int size, int pairNumber, enum MajorColor major, enum MinorColor minor) {
-    snprintf(buffer, size, "%d,%s,%s\n", pairNumber,
-             MajorColorNames[major], MinorColorNames[minor]);
-}
-void json_header(char* buffer, int size) {
-    snprintf(buffer, size, "[\n");
-}
-void json_line_format(char* buffer, int size, int pairNumber, enum MajorColor major, enum MinorColor minor) {
-    snprintf(buffer, size,
-             "  { \"PairNumber\": %d, \"MajorColor\": \"%s\", \"MinorColor\": \"%s\" },\n",
-             pairNumber, MajorColorNames[major], MinorColorNames[minor]);
-}
 
-void printReferenceManual(const Formatter* format) {
-    printf("Reference Manual:\n");
-    char buffer[200];
-    format->header(buffer, sizeof(buffer));
-    printf("%s", buffer);
-    for (int i=0; i< 25; ++i) {
-        ColorPair colorPair = GetColorFromPairNumber(i + 1);
-        format->line(buffer, sizeof(buffer), i + 1, colorPair.majorColor, colorPair.minorColor);
-        if (format == &JsonFormatter && i == 24) {         // For JSON: avoid comma after the last element
-            buffer[strlen(buffer) - 2] = '\0'; // remove ","
-            snprintf(buffer + strlen(buffer), sizeof(buffer) - strlen(buffer), "\n");
-        }
-        printf("%s", buffer);
-    }
-    if (format == &JsonFormatter) {
-        printf("]\n");
+enum {MARKDOWN, CSV, JSON};
+
+void printReferenceManual(int format) {
+    int totalPairs = numberOfMajorColors * numberOfMinorColors;
+    
+    switch (format) {
+        case MARKDOWN:
+            printf("# Color Code Reference Manual\n\n");
+            printf("| Pair No. | Major Color | Minor Color |\n");
+            printf("|----------|-------------|-------------|\n");
+            
+            for (int i = 1; i <= totalPairs; i++) {
+                ColorPair colorPair = GetColorFromPairNumber(i);
+                printf("| %d | %s | %s |\n", i, 
+                       MajorColorNames[colorPair.majorColor], 
+                       MinorColorNames[colorPair.minorColor]);
+            }
+            break;
+            
+        case CSV:
+            printf("Pair No.,Major Color,Minor Color\n");
+            
+            for (int i = 1; i <= totalPairs; i++) {
+                ColorPair colorPair = GetColorFromPairNumber(i);
+                printf("%d,%s,%s\n", i, 
+                       MajorColorNames[colorPair.majorColor], 
+                       MinorColorNames[colorPair.minorColor]);
+            }
+            break;
+            
+        case JSON:
+            printf("{\n  \"colorPairs\": [\n");
+            
+            for (int i = 1; i <= totalPairs; i++) {
+                ColorPair colorPair = GetColorFromPairNumber(i);
+                char buffer[100];
+                
+                sprintf(buffer, "    {\"pairNumber\": %d, \"majorColor\": \"%s\", \"minorColor\": \"%s\"},", 
+                        i, MajorColorNames[colorPair.majorColor], MinorColorNames[colorPair.minorColor]);
+                
+                if (i == totalPairs) {
+                    buffer[strlen(buffer) - 1] = '\0'; // remove ","
+                }
+                printf("%s\n", buffer);
+            }
+            
+            printf("  ]\n}\n");
+            break;
+            
+        default:
+            fprintf(stderr, "Unsupported format type: %d\n", format);
+            break;
     }
 }

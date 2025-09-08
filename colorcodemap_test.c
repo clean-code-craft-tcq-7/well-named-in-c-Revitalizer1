@@ -1,27 +1,21 @@
 #include <stdio.h>
 #include <assert.h>
-#include <string.h>
 #include "colorcode.h"
-#include "colorcodeFormatter.h"
+#include "test.h"
 
-void testNumberToPair(int pairNumber,
-    enum MajorColor expectedMajor,
-    enum MinorColor expectedMinor)
-{
+void testNumberToPair(int pairNumber, enum MajorColor expectedMajor, enum MinorColor expectedMinor) {
     ColorPair colorPair = GetColorFromPairNumber(pairNumber);
-    char colorPairNames[MAX_COLORPAIR_NAME_CHARS];
-    ColorPairToString(&colorPair, colorPairNames);
-    printf("Got pair %s\n", colorPairNames);
+    char colorPairStr[MAX_COLORPAIR_STRING_LENGTH];
+    ColorPairToString(&colorPair, colorPairStr);
+    printf("Got pair %s\n", colorPairStr);
     assert(colorPair.majorColor == expectedMajor);
     assert(colorPair.minorColor == expectedMinor);
 }
 
-void testPairToNumber(
-    enum MajorColor major,
-    enum MinorColor minor,
-    int expectedPairNumber)
-{
-    ColorPair colorPair = { major, minor };
+void testPairToNumber(enum MajorColor major, enum MinorColor minor, int expectedPairNumber) {
+    ColorPair colorPair;
+    colorPair.majorColor = major;
+    colorPair.minorColor = minor;
     int pairNumber = GetPairNumberFromColor(&colorPair);
     printf("Got pair number %d\n", pairNumber);
     assert(pairNumber == expectedPairNumber);
@@ -30,6 +24,9 @@ void testPairToNumber(
 void run_colorcode_tests() {
     testNumberToPair(4, WHITE, BROWN);
     testNumberToPair(5, WHITE, SLATE);
+    testNumberToPair(23, VIOLET, GREEN);
+    
     testPairToNumber(BLACK, ORANGE, 12);
     testPairToNumber(VIOLET, SLATE, 25);
+    testPairToNumber(RED, BLUE, 6);
 }

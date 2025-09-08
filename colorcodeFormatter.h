@@ -1,21 +1,14 @@
-#ifndef REF_COLOR_FORMATTER_H
-#define REF_COLOR_FORMATTER_H
-typedef struct {
-    void (*header)(char* buffer, int size);
-    void (*line)(char* buffer, int size, int pairNumber, enum MajorColor major, enum MinorColor minor);
-} Formatter;
+#ifndef COLORCODE_FORMATTER_H
+#define COLORCODE_FORMATTER_H
 
-void md_header(char* buffer, int size);
-void md_line_format(char* buffer, int size, int pairNumber, enum MajorColor major, enum MinorColor minor);
-void csv_header(char* buffer, int size);
-void csv_line_format(char* buffer, int size, int pairNumber, enum MajorColor major, enum MinorColor minor);
-void json_header(char* buffer, int size);
-void json_line_format(char* buffer, int size, int pairNumber, enum MajorColor major, enum MinorColor minor);
+// Format options for the reference manual
+enum FormatType {
+    MARKDOWN_FORMAT,
+    CSV_FORMAT,
+    JSON_FORMAT
+};
 
-extern Formatter MarkdownFormatter;
-extern Formatter CsvFormatter;
-extern Formatter JsonFormatter;
+// Function to print the reference manual in the specified format
+void printReferenceManual(int format);
 
-void printReferenceManual(const Formatter* format);
-
-#endif
+#endif /* COLORCODE_FORMATTER_H */
